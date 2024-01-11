@@ -1,6 +1,7 @@
 package com.example.adyenserver;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/adyen")
+@Slf4j
 public class AdyenController {
 
     @GetMapping
@@ -42,7 +44,7 @@ public class AdyenController {
             try (Response response = client.newCall(request).execute()) {
                 String responseBody = response.body().string();
 
-                System.out.println("Generated token: " + responseBody);
+                log.info("Generated token: " + responseBody);
 
                 return Optional.ofNullable(new Gson().fromJson(responseBody, Map.class))
                         .map(x -> x.getOrDefault("sdkData", ""))
@@ -50,7 +52,7 @@ public class AdyenController {
                         .orElse("Error");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return "Error";
         }
     }
